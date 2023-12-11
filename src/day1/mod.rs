@@ -1,21 +1,4 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-
-fn read_file_lines(path: &str) -> Option<Vec<String>> {
-    let file = match File::open(path) {
-        Ok(file) => file,
-        Err(_) => return None,
-    };
-
-    let reader = BufReader::new(file);
-    let lines: Vec<String> = reader.lines().filter_map(|line| line.ok()).collect();
-
-    if lines.is_empty() {
-        None
-    } else {
-        Some(lines)
-    }
-}
+use crate::utils::read_file_lines;
 
 fn get_digits_from_line(line: &str) -> i32 {
     let chars: Vec<char> = line.chars().collect();
@@ -130,11 +113,12 @@ pub fn part2(path: &str) -> Option<i32> {
 pub fn part1(path: &str) -> Option<i32> {
     match read_file_lines(path) {
         Some(lines) => {
-            let mut sum = 0;
-            for line in lines {
-                sum += get_digits_from_line(&line);
-            }
-            return Some(sum);
+            return Some(
+                lines
+                    .iter()
+                    .map(|line| get_digits_from_line(line))
+                    .sum::<i32>(),
+            );
         }
         None => {
             eprintln!("Error reading file or file not found: {}", path);
