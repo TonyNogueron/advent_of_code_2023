@@ -40,10 +40,11 @@ fn day2() {
 }
 
 fn day3() {
-    // Time taken: 36m 36s
+    // Time taken p1: 36m 36s
+    // Time taken p2: 1h 43m 5s
     let file_path = "./src/day3/p1.txt";
     match day3::day3part1(file_path) {
-        Some(ans) => println!("Day 3: {}", ans),
+        Some(ans) => println!("Day 3 \n p1: {} \n p2: {}", ans.0, ans.1),
         _ => println!("Error"),
     }
 }
