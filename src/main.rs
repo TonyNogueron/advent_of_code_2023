@@ -1,10 +1,12 @@
 pub mod day1;
+pub mod day12;
 pub mod day2;
 pub mod day3;
+pub mod day4;
 pub mod utils;
 
 fn main() {
-    day3()
+    day4()
 }
 
 #[allow(dead_code)]
@@ -39,12 +41,34 @@ fn day2() {
     }
 }
 
+#[allow(dead_code)]
 fn day3() {
     // Time taken p1: 36m 36s
     // Time taken p2: 1h 43m 5s
     let file_path = "./src/day3/p1.txt";
     match day3::day3part1(file_path) {
         Some(ans) => println!("Day 3 \n p1: {} \n p2: {}", ans.0, ans.1),
+        _ => println!("Error"),
+    }
+}
+
+#[allow(dead_code)]
+fn day4() {
+    // Time taken p1: 22m
+    // Time taken p2: 45m
+    let file_path = "./src/day4/p1.txt";
+    match day4::day4part1(file_path) {
+        Some(ans) => println!("Day 4\n p1: {}", ans),
+        _ => println!("Error"),
+    }
+}
+
+#[allow(dead_code)]
+fn day12() {
+    // Time taken p1: 3h 57m :(
+    let file_path = "./src/day12/p1.txt";
+    match day12::day12part1(file_path) {
+        Some(ans) => println!("Day 12\n p1: {}", ans),
         _ => println!("Error"),
     }
 }
