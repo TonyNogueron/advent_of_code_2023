@@ -56,12 +56,10 @@ fn part2(lines: Vec<String>) -> i32 {
     let num_cards = cards.len();
 
     for i in 0..num_cards {
-        for _ in 0..cards[i].copies {
-            if cards[i].points > 0 {
-                for j in 0..cards[i].points {
-                    if (i + 1 + j as usize) < num_cards {
-                        cards[i + 1 + j as usize].copies += 1;
-                    }
+        if cards[i].points > 0 {
+            for j in 0..cards[i].points {
+                if (i + 1 + j as usize) < num_cards {
+                    cards[i + 1 + j as usize].copies += cards[i].copies;
                 }
             }
         }

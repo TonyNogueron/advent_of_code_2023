@@ -3,10 +3,11 @@ pub mod day12;
 pub mod day2;
 pub mod day3;
 pub mod day4;
+pub mod day5;
 pub mod utils;
 
 fn main() {
-    day4()
+    day5(); 
 }
 
 #[allow(dead_code)]
@@ -69,6 +70,16 @@ fn day12() {
     let file_path = "./src/day12/p1.txt";
     match day12::day12part1(file_path) {
         Some(ans) => println!("Day 12\n p1: {}", ans),
+        _ => println!("Error"),
+    }
+}
+
+#[allow(dead_code)]
+fn day5() {
+    // Time taken p1:
+    let file_path = "./src/day5/test.txt";
+    match day5::day5part1(file_path) {
+        Some(ans) => println!("Day 5\n p1: {}", ans),
         _ => println!("Error"),
     }
 }
