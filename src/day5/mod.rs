@@ -1,6 +1,8 @@
+use std::{collections::HashMap, u64::MAX};
+
 use crate::utils::read_file;
 
-pub fn day5part1(path: &str) -> Option<i32> {
+pub fn day5part1(path: &str) -> Option<u64> {
     match read_file(path) {
         Some(contents) => Some(part1(contents)),
         None => {
@@ -10,51 +12,121 @@ pub fn day5part1(path: &str) -> Option<i32> {
     }
 }
 
-fn part1(contents: String) -> i32 {
-    let blocks: Vec<String> = contents.split("\n\n").map(|s| s.to_string()).collect();
-
-    let seeds: Vec<i32> = blocks[0].split(":").nth(1).unwrap().split_whitespace().map(|s| s.parse::<i32>().unwrap()).collect();
-
-    println!("seeds: {:?}", seeds);
-
-    for block in blocks {
-        println!("{}", block);
-    }
-    0
+#[derive(Debug)]
+struct Item {
+    dst: u64,
+    src: u64,
+    range: u64,
 }
 
-/*
-seeds: 79 14 55 13
+#[derive(Debug)]
+struct Block {
+    from: String,
+    to: String,
+    items: Vec<Item>,
+}
 
-seed-to-soil map:
-50 98 2
-52 50 48
+fn part1(contents: String) -> u64 {
+    let blocks: Vec<String> = contents.split("\n\n").map(|s| s.to_string()).collect();
+    let seeds = parse_seeds(&blocks[0]);
 
-soil-to-fertilizer map:
-0 15 37
-37 52 2
-39 0 15
+    let mut blocks_parsed: Vec<Block> = vec![];
 
-fertilizer-to-water map:
-49 53 8
-0 11 42
-42 0 7
-57 7 4
+    for i in 1..blocks.len() {
+        blocks_parsed.push(parse_block(&blocks[i]));
+    }
 
-water-to-light map:
-88 18 7
-18 25 70
+    // println!("blocks: {:?}", blocks_parsed);
 
-light-to-temperature map:
-45 77 23
-81 45 19
-68 64 13
+    let mut min: u64 = MAX;
 
-temperature-to-humidity map:
-0 69 1
-1 0 69
+    let mut block_map: HashMap<String, u64> = HashMap::new();
 
-humidity-to-location map:
-60 56 37
-56 93 4
-*/
+    for i in 0..blocks_parsed.len() {
+        if !block_map.contains_key(&blocks_parsed[i].from) {
+            block_map.insert(blocks_parsed[i].from.clone(), i as u64);
+        }
+    }
+
+    for seed in seeds {
+        let converted = walk_map(seed, "seed".to_string(), &block_map, &blocks_parsed);
+        // println!("Converted seed: {} to {}", seed, converted);
+        if converted < min {
+            min = converted;
+        }
+    }
+
+    min
+}
+
+fn walk_map(
+    value: u64,
+    from: String,
+    block_map: &HashMap<String, u64>,
+    blocks_parsed: &Vec<Block>,
+) -> u64 {
+    let mut transformed_value: u64 = value;
+
+    if block_map.contains_key(&from) {
+        let block = &blocks_parsed[block_map[&from] as usize];
+        for item in &block.items {
+            if value >= item.src && value <= item.src + item.range {
+                transformed_value = item.dst + (value - item.src);
+                return walk_map(
+                    transformed_value,
+                    block.to.clone(),
+                    block_map,
+                    blocks_parsed,
+                );
+            }
+        }
+        return walk_map(value, block.to.clone(), block_map, blocks_parsed);
+    }
+    transformed_value
+}
+
+fn parse_block(block: &str) -> Block {
+    let lines: Vec<String> = block.split("\n").map(|s| s.to_string()).collect();
+
+    let (from, to) = parse_from_to(&lines[0]);
+    let mut items: Vec<Item> = vec![];
+
+    for i in 1..lines.len() {
+        if lines[i] == "" {
+            continue;
+        }
+        items.push(parse_item(&lines[i]));
+    }
+
+    let b: Block = Block { from, to, items };
+    b
+}
+
+fn parse_from_to(line: &str) -> (String, String) {
+    let aux: String = line.split(" ").next().unwrap().to_string();
+    let from_to: Vec<String> = aux.split("-").map(|s| s.to_string()).collect();
+    (from_to[0].clone(), from_to[2].clone())
+}
+
+fn parse_item(line: &str) -> Item {
+    let item: Vec<u64> = line
+        .split_whitespace()
+        .map(|s| s.parse::<u64>().expect("Error parsing item to number"))
+        .collect();
+    Item {
+        dst: item[0],
+        src: item[1],
+        range: item[2],
+    }
+}
+
+fn parse_seeds(line: &str) -> Vec<u64> {
+    let seeds: Vec<u64> = line
+        .split(":")
+        .nth(1)
+        .unwrap()
+        .split_whitespace()
+        .map(|s| s.parse::<u64>().expect("Error parsing seed to number"))
+        .collect();
+    seeds
+}
